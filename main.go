@@ -6,6 +6,7 @@ import (
 
 	"github.com/docker/docker/client"
 	"github.com/docker/go-plugins-helpers/secrets"
+	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
 	"docker-secretprovider-pki/backend"
@@ -28,8 +29,10 @@ func main() {
 	switch os.Getenv("BACKEND") {
 	case "secrethub":
 		ca, err = backend.NewSecrethubBackend()
-	default:
+	case "test":
 		ca, err = backend.NewTestBackend()
+	default:
+		err = errors.New("backend not configured. Use `docker plugin set <plugin alias> BACKEND=<value>`")
 	}
 
 	if err != nil {

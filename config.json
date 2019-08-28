@@ -1,0 +1,47 @@
+{
+    "description": "PKI secrets plugin",
+    "documentation": "https://github.com/sendsmaily",
+    "env": [
+        {
+            "name": "BACKEND",
+            "description": "PKI provider backend to use",
+            "settable": [
+                "value"
+            ],
+            "value": "test"
+        }
+    ],
+    "entrypoint": [
+        "/docker-secretprovider-pki"
+    ],
+    "mounts": [
+        {
+            "destination": "/secrethub",
+            "source": "/etc/docker/secrethub",
+            "options": [
+                "rbind"
+            ],
+            "type": "bind"
+        },
+        {
+            "destination": "/docker.sock",
+            "source": "/run/docker.sock",
+            "options": [
+                "rbind"
+            ],
+            "type": "bind"
+        }
+    ],
+    "network": {
+        "type": "host"
+    },
+    "interface": {
+        "types": [
+            "docker.secretprovider/1.0"
+        ],
+        "socket": "plugin.sock"
+    },
+    "linux": {
+        "capabilities": []
+    }
+}

@@ -1,0 +1,37 @@
+---
+tasks:
+  set-environment:
+    private: true
+    options:
+      build-tag:
+        default:
+          command: git log -1 --pretty=%h ./
+    run:
+      - set-environment:
+          BUILD_TAG: ${build-tag}
+
+  build.plugin:
+    usage: Build the PKI plugin
+    run:
+      - task: set-environment
+      # Clean up.
+      - command: rm -rf ./plugin
+      # Build the plugin, then extract the created filesystem from the image
+      # into `./plugin/rootfs` directory.
+      - command: docker build -t sendsmaily/docker-secretprovider-pki:rootfs .
+      - command: mkdir -p ./plugin/rootfs
+      - command: docker create --name sendsmaily-pki-rootfs sendsmaily/docker-secretprovider-pki:rootfs
+      - command: docker export sendsmaily-pki-rootfs | tar -xC ./plugin/rootfs
+      - command: docker rm -vf sendsmaily-pki-rootfs
+      # Copy over configuration file needed to run the plugin.
+      - command: cp config.json ./plugin/
+      # Then create the plugin from created file system.
+      - command: docker plugin rm -f sendsmaily/docker-secretprovider-pki:${BUILD_TAG} || true
+      - command: docker plugin create sendsmaily/docker-secretprovider-pki:${BUILD_TAG} ./plugin
+
+  publish.plugin:
+    usage: Publish the PKI plugin on Docker Hub
+    run:
+      - task: set-environment
+      - command: docker plugin push sendsmaily/docker-secretprovider-pki:${BUILD_TAG}
+      - command: docker plugin push sendsmaily/docker-secretprovider-pki:latest

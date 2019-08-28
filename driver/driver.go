@@ -146,8 +146,10 @@ func (d Driver) IssueCertificate(config CertRequest) ([]byte, error) {
 		return nil, err
 	}
 
-	if err := pem.Encode(bundle, &pem.Block{Type: "CERTIFICATE", Bytes: ca.Certificate[0]}); err != nil {
-		return nil, err
+	for _, cert := range ca.Certificate {
+		if err := pem.Encode(bundle, &pem.Block{Type: "CERTIFICATE", Bytes: cert}); err != nil {
+			return nil, err
+		}
 	}
 
 	return bundle.Bytes(), nil

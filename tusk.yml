@@ -34,4 +34,3 @@ tasks:
     run:
       - task: set-environment
       - command: docker plugin push sendsmaily/docker-secretprovider-pki:${BUILD_TAG}
-      - command: docker plugin push sendsmaily/docker-secretprovider-pki:latest

@@ -26,7 +26,7 @@ Plugin accepts following configuration labels for secrets:
 - `pki.cn`: Common Name for the certificate,
 - `pki.dns_names`: DNS SANS for the certificate
 - `pki.ip_addrs`: IP SANS for the certificate (most likely you won't be using this, but it exists for some potential edge cases),
-- `label:"pki.usage`: Extended Key Usage specification for the certificate. Valid values: `server`, `client`, `server-client` (and also `client-server`), and
+- `pki.usage`: Extended Key Usage specification for the certificate. Valid values: `server`, `client`, `server-client` (and also `client-server`), and
 - `pki.lifetime`: lifetime for the certificate specified as Go duration, defaults to: `24h`.
 
 > Certificate revocations are and will not be implemented. Read up on the philosophy behind that [here](https://www.vaultproject.io/docs/secrets/pki/index.html#keep-certificate-lifetimes-short-for-crl-39-s-sake).

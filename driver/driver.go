@@ -56,22 +56,37 @@ func (d Driver) Get(request secrets.Request) secrets.Response {
 	// To work around this, the secret's labels are inspected on the daemon.
 	meta, _, err := d.client.SecretInspectWithRaw(context.Background(), request.SecretName)
 	if err != nil {
+		msg := fmt.Sprintf("pki: error inspecting secret: %s", err.Error())
+
+		// The error is explicitly logged because Docker doesn't log the error returned.
+		zap.S().Error(msg)
+
 		return secrets.Response{
-			Err: fmt.Sprintf("pki: error inspecting secret: %s", err.Error()),
+			Err: msg,
 		}
 	}
 
 	certRequest := CertRequest{}
 	if err := certRequest.FromSecretLabels(meta.Spec.Labels); err != nil {
+		msg := fmt.Sprintf("pki: error parsing secret's labels: %s", err.Error())
+
+		// The error is explicitly logged because Docker doesn't log the error returned.
+		zap.S().Error(msg)
+
 		return secrets.Response{
-			Err: fmt.Sprintf("pki: error parsing configuration from secret labels: %s", err.Error()),
+			Err: msg,
 		}
 	}
 
 	bundle, err := d.IssueCertificate(certRequest)
 	if err != nil {
+		msg := fmt.Sprintf("pki: error issuing certificate: %s", err.Error())
+
+		// The error is explicitly logged because Docker doesn't log the error returned.
+		zap.S().Error(msg)
+
 		return secrets.Response{
-			Err: fmt.Sprintf("pki: error issuing certificate: %s", err.Error()),
+			Err: msg,
 		}
 	}
 

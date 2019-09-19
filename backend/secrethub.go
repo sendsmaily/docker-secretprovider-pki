@@ -58,9 +58,20 @@ func (b SecrethubBackend) Load(ca string) (*tls.Certificate, error) {
 		raw = rest
 	}
 
-	cert.PrivateKey, err = x509.ParsePKCS1PrivateKey(k.Data)
-	if err != nil {
-		return nil, errors.Wrap(err, "error parsing private key")
+	block, _ := pem.Decode(k.Data)
+
+	if block.Type == "RSA PRIVATE KEY" {
+		cert.PrivateKey, err = x509.ParsePKCS1PrivateKey(block.Bytes)
+		if err != nil {
+			return nil, errors.Wrap(err, "error parsing PCKS1 private key")
+		}
+	} else if block.Type == "PRIVATE KEY" {
+		cert.PrivateKey, err = x509.ParsePKCS8PrivateKey(block.Bytes)
+		if err != nil {
+			return nil, errors.Wrap(err, "error parsing PKCS8 private key")
+		}
+	} else {
+		return nil, errors.New(fmt.Sprintf("received unknown PEM type for private key: %s", block.Type))
 	}
 
 	return cert, nil

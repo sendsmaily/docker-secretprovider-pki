@@ -8,7 +8,7 @@ COPY . /go/src/github.com/sendsmaily/docker-secretprovider-pki
 
 WORKDIR /go/src/github.com/sendsmaily/docker-secretprovider-pki
 
-RUN set -ex && go install --ldflags '-extldflags "-static"'
+RUN set -ex && go install -mod vendor --ldflags '-extldflags "-static"'
 
 
 FROM alpine:latest

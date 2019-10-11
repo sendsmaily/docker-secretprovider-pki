@@ -43,7 +43,7 @@ var _ = Describe("PKI Docker secret provider driver", func() {
 				cert, err := parsePKIBundle(bundle)
 				Expect(err).To(BeNil())
 
-				Expect(len(cert.Certificate)).To(Equal(2))
+				Expect(len(cert.Certificate)).To(Equal(3))
 				Expect(cert.PrivateKey).ToNot(BeNil())
 			})
 
@@ -54,17 +54,15 @@ var _ = Describe("PKI Docker secret provider driver", func() {
 				signedCert, err := x509.ParseCertificate(cert.Certificate[0])
 				Expect(err).To(BeNil())
 
-				rootCert, err := x509.ParseCertificate(cert.Certificate[1])
-				Expect(err).To(BeNil())
+				intermediateCert, err := x509.ParseCertificate(cert.Certificate[1])
 
-				// Sanity check to validate the root cert is in the `rootCert` variable,
-				// and not the other way around. This works on the assumption that root
-				// certificate is self signed (which it is with the testing backend).
-				Expect(rootCert.AuthorityKeyId).To(Equal(rootCert.SubjectKeyId))
+				rootCert, err := x509.ParseCertificate(cert.Certificate[2])
+				Expect(err).To(BeNil())
 
 				// As per RFC 3280, section 4.2.1.1 and 4.2.1.2:
 				// https://tools.ietf.org/html/rfc3280#section-4.2.1.1
-				Expect(signedCert.AuthorityKeyId).To(Equal(rootCert.SubjectKeyId))
+				Expect(signedCert.AuthorityKeyId).To(Equal(intermediateCert.SubjectKeyId))
+				Expect(intermediateCert.AuthorityKeyId).To(Equal(rootCert.SubjectKeyId))
 			})
 		})
 	})

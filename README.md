@@ -1,3 +1,8 @@
+# Disclaimer
+
+This plugin was built as a proof of concept to research the feasibility of using Docker Swarm in production.
+It has **not** been subjected to security audits of any kind. Do not use it for anything security critical!
+
 # Overview
 
 The PKI provider Docker plugin allows running a private PKI issuing (ephemeral) TLS certificates.
